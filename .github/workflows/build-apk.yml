@@ -34,7 +34,7 @@ jobs:
           npm init -y
           npm install @capacitor/core@7 @capacitor/android@7 @capacitor/cli@7
           mkdir -p www
-          cp kids_learning_app.html www/index.html
+      cp kids_learning_app.html www/index.html
           node -e "require('fs').writeFileSync('capacitor.config.json', JSON.stringify({appId:'com.kidslearning.app',appName:'Kids Learning',webDir:'www'}))"
           npx cap add android
 
