@@ -1,0 +1,51 @@
+YAML
+
+name: Build Kids Learning APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare app
+        run: |
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/android@7 @capacitor/cli@7
+          mkdir -p www
+          cp index.html www/index.html
+          node -e "require('fs').writeFileSync('capacitor.config.json', JSON.stringify({appId:'com.kidslearning.app',appName:'Kids Learning',webDir:'www'}))"
+          npx cap add android
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kids-Learning-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
